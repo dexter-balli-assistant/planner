@@ -2,328 +2,337 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Baljeet's Goals</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-deep:    #1E1535;
-      --bg-card:    #2A1F4A;
-      --bg-light:   #F2EEF9;
-      --accent:     #7C3AED;
-      --accent-glow:#A855F7;
-      --green:      #22C55E;
-      --green-dim:  #166534;
-      --text:       #F8F4FF;
-      --text-muted: #C4B5D4;
-      --border:     rgba(168, 85, 247, 0.18);
-      --gold:       #FBBF24;
-      --gold-dim:   #92400E;
+      --bg:         #111118;
+      --bg-card:    #18181F;
+      --bg-card2:   #1E1E28;
+      --border:     rgba(255,255,255,0.07);
+      --text:       #F0EEFF;
+      --muted:      #8E879E;
+
+      /* goal accent colors */
+      --c1: #F97316; /* orange  — Strong */
+      --c2: #22C55E; /* green   — Role Model */
+      --c3: #6366F1; /* indigo  — Grow Income */
+      --c4: #EAB308; /* gold    — Research Lab */
+      --c5: #06B6D4; /* teal    — Lake of Wealth */
+      --c6: #D946EF; /* magenta — Teesra Til */
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg-deep);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
 
-    /* ─── HERO ─────────────────────────────── */
-    .hero {
-      background: linear-gradient(135deg, #1E1535 0%, #2D1B69 50%, #1E1535 100%);
-      padding: 48px 24px 56px;
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ══════════════════════════════════
+       GOALS VIEW
+    ══════════════════════════════════ */
+
+    .page-hero {
+      background: linear-gradient(175deg, #1A1024 0%, #111118 100%);
+      padding: 52px 20px 40px;
       text-align: center;
-      position: relative;
-      overflow: hidden;
+      border-bottom: 1px solid var(--border);
     }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,58,237,0.25) 0%, transparent 70%);
-    }
-    .hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
-    .hero-date {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
+    .page-hero .label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--accent-glow);
-      margin-bottom: 16px;
-    }
-    .hero h1 {
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 800;
-      line-height: 1.15;
-      color: #fff;
+      color: var(--muted);
       margin-bottom: 10px;
     }
-    .hero h1 span { color: var(--accent-glow); }
-    .hero-sub {
-      font-size: 15px;
-      color: var(--text-muted);
-      font-weight: 400;
+    .page-hero h1 {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
     }
 
-    /* ─── LAYOUT ────────────────────────────── */
-    main {
-      max-width: 900px;
+    section.goals-section {
+      max-width: 880px;
       margin: 0 auto;
-      padding: 40px 20px 80px;
+      padding: 32px 16px 100px;
     }
 
-    /* ─── SECTION HEADER ────────────────────── */
-    .section-header {
+    .goals-list {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .section-header h2 {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-    .section-header .line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ─── GOAL CARDS ────────────────────────── */
-    .goals-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-      margin-bottom: 48px;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .goal-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 20px;
       position: relative;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      cursor: default;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .goal-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(124,58,237,0.2);
-    }
+    .goal-card:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.4); }
 
-    /* accent top strip */
+    /* left accent bar */
     .goal-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 24px; right: 24px;
-      height: 2px;
-      border-radius: 0 0 4px 4px;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 14px 0 0 14px;
     }
-    .goal-card.violet::before  { background: linear-gradient(90deg, #7C3AED, #A855F7); }
-    .goal-card.gold::before    { background: linear-gradient(90deg, #D97706, #FBBF24); }
-    .goal-card.green::before   { background: linear-gradient(90deg, #059669, #34D399); }
+    .gc1::before { background: var(--c1); }
+    .gc2::before { background: var(--c2); }
+    .gc3::before { background: var(--c3); }
+    .gc4::before { background: var(--c4); }
+    .gc5::before { background: var(--c5); }
+    .gc6::before { background: var(--c6); }
 
-    .goal-emoji {
-      font-size: 32px;
-      margin-bottom: 14px;
-      display: block;
+    .goal-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
     }
+    .goal-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .gc1 .goal-num { background: rgba(249,115,22,0.15); color: var(--c1); }
+    .gc2 .goal-num { background: rgba(34,197,94,0.12); color: var(--c2); }
+    .gc3 .goal-num { background: rgba(99,102,241,0.15); color: var(--c3); }
+    .gc4 .goal-num { background: rgba(234,179,8,0.12); color: var(--c4); }
+    .gc5 .goal-num { background: rgba(6,182,212,0.12); color: var(--c5); }
+    .gc6 .goal-num { background: rgba(217,70,239,0.12); color: var(--c6); }
+
+    .goal-body { flex: 1; min-width: 0; }
     .goal-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
       color: #fff;
       margin-bottom: 6px;
       line-height: 1.3;
     }
     .goal-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.55;
-      margin-bottom: 18px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 14px;
     }
-
-    /* progress bar */
-    .progress-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .progress-bar {
-      flex: 1;
-      height: 5px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 99px;
-      transition: width 0.6s ease;
-    }
-    .goal-card.violet .progress-fill { background: linear-gradient(90deg, #7C3AED, #A855F7); }
-    .goal-card.gold   .progress-fill { background: linear-gradient(90deg, #D97706, #FBBF24); }
-    .goal-card.green  .progress-fill { background: linear-gradient(90deg, #059669, #34D399); }
-    .progress-pct {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      min-width: 30px;
-      text-align: right;
-    }
-
-    /* status chip */
-    .chip {
+    .goal-focus {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-top: 2px;
+    }
+    .gc1 .goal-focus { background: rgba(249,115,22,0.12); color: var(--c1); }
+    .gc2 .goal-focus { background: rgba(34,197,94,0.10); color: var(--c2); }
+    .gc3 .goal-focus { background: rgba(99,102,241,0.12); color: var(--c3); }
+    .gc4 .goal-focus { background: rgba(234,179,8,0.10); color: var(--c4); }
+    .gc5 .goal-focus { background: rgba(6,182,212,0.10); color: var(--c5); }
+    .gc6 .goal-focus { background: rgba(217,70,239,0.10); color: var(--c6); }
+
+    /* ══════════════════════════════════
+       TODAY VIEW
+    ══════════════════════════════════ */
+
+    .today-hero {
+      background: linear-gradient(175deg, #0D1A12 0%, #111118 100%);
+      padding: 52px 20px 36px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .today-hero .day-label {
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 99px;
-      margin-top: 12px;
+      color: #22C55E;
+      margin-bottom: 8px;
     }
-    .chip.active  { background: rgba(124,58,237,0.18); color: var(--accent-glow); }
-    .chip.wealth  { background: rgba(251,191,36,0.15); color: var(--gold); }
-    .chip.body    { background: rgba(34,197,94,0.15); color: #4ADE80; }
+    .today-hero h1 {
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 800;
+      color: #fff;
+    }
+    .today-hero p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
 
-    /* ─── INTENTIONS (Daily) ────────────────── */
+    section.today-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 28px 16px 100px;
+    }
+
+    /* quote */
+    .quote-box {
+      background: linear-gradient(135deg, rgba(217,70,239,0.08), rgba(99,102,241,0.06));
+      border: 1px solid rgba(217,70,239,0.15);
+      border-radius: 12px;
+      padding: 18px 20px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .quote-box p {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .quote-box cite {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #D946EF;
+      margin-top: 8px;
+      font-style: normal;
+    }
+
+    .sec-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sec-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+    /* intentions list */
     .intentions-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 48px;
+      gap: 8px;
+      margin-bottom: 20px;
     }
-    .intention-item {
+
+    .int-item {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      transition: background 0.15s;
-    }
-    .intention-item.done {
-      opacity: 0.5;
-    }
-    .intention-item.done .intention-text {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
-      border: 2px solid rgba(168,85,247,0.4);
-      background: transparent;
+      border-radius: 11px;
+      padding: 12px 14px;
       cursor: pointer;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .int-item:active { background: var(--bg-card2); }
+    .int-item.done { opacity: 0.42; }
+    .int-item.done .int-text { text-decoration: line-through; }
+
+    .cb {
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      border: 2px solid rgba(255,255,255,0.12);
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       margin-top: 1px;
       transition: background 0.15s, border-color 0.15s;
-    }
-    .checkbox.checked {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    .checkbox.checked::after {
-      content: '✓';
-      font-size: 11px;
+      font-size: 12px;
       color: #fff;
-      font-weight: 700;
     }
-    .intention-content { flex: 1; }
-    .intention-text {
+    .int-item.done .cb {
+      background: #22C55E;
+      border-color: #22C55E;
+    }
+
+    .int-body { flex: 1; min-width: 0; }
+    .int-text {
       font-size: 14px;
       font-weight: 500;
       color: var(--text);
       line-height: 1.4;
     }
-    .intention-goal-tag {
+    .int-tag {
       font-size: 11px;
-      color: var(--accent-glow);
-      margin-top: 3px;
       font-weight: 500;
+      margin-top: 3px;
+      opacity: 0.7;
     }
+    .tag-c1 { color: var(--c1); }
+    .tag-c2 { color: var(--c2); }
+    .tag-c3 { color: var(--c3); }
+    .tag-c4 { color: var(--c4); }
+    .tag-c5 { color: var(--c5); }
+    .tag-c6 { color: var(--c6); }
+    .tag-cx { color: var(--muted); }
 
-    /* ─── ADD INTENTION form ──────────────── */
-    .add-form {
+    /* add form */
+    .add-row {
       display: flex;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-top: 4px;
     }
-    .add-form input {
+    .add-row input {
       flex: 1;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 11px 14px;
       font-size: 14px;
       color: var(--text);
       font-family: inherit;
       outline: none;
       transition: border-color 0.15s;
+      -webkit-appearance: none;
     }
-    .add-form input::placeholder { color: rgba(196,181,212,0.45); }
-    .add-form input:focus { border-color: var(--accent-glow); }
-    .add-form button {
-      background: var(--accent);
-      color: #fff;
+    .add-row input::placeholder { color: rgba(142,135,158,0.5); }
+    .add-row input:focus { border-color: rgba(255,255,255,0.2); }
+    .add-row button {
+      background: #22C55E;
+      color: #000;
       border: none;
       border-radius: 10px;
-      padding: 10px 18px;
+      padding: 11px 16px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      transition: background 0.15s;
-    }
-    .add-form button:hover { background: var(--accent-glow); }
-
-    /* ─── QUOTE BOX ─────────────────────────── */
-    .quote-box {
-      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(168,85,247,0.06));
-      border: 1px solid rgba(168,85,247,0.2);
-      border-radius: 16px;
-      padding: 24px 28px;
-      text-align: center;
-      margin-bottom: 48px;
-    }
-    .quote-box p {
-      font-size: 15px;
-      font-style: italic;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .quote-box span {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--accent-glow);
-      margin-top: 10px;
-      letter-spacing: 0.06em;
+      white-space: nowrap;
     }
 
-    /* ─── BOTTOM NAV ────────────────────────── */
+    /* ══════════════════════════════════
+       BOTTOM NAV
+    ══════════════════════════════════ */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      background: rgba(30,21,53,0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(17,17,24,0.93);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
-      padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
     }
     .nav-btn {
       display: flex;
@@ -332,224 +341,300 @@
       gap: 3px;
       background: none;
       border: none;
-      color: var(--text-muted);
+      color: var(--muted);
       font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.05em;
+      text-transform: uppercase;
       cursor: pointer;
       font-family: inherit;
-      padding: 4px 16px;
+      padding: 4px 20px;
       border-radius: 8px;
+      -webkit-tap-highlight-color: transparent;
       transition: color 0.15s;
     }
-    .nav-btn.active { color: var(--accent-glow); }
-    .nav-btn .icon { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: #fff; }
+    .nav-btn .ico { font-size: 20px; line-height: 1; }
+    .nav-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: #22C55E;
+      margin-top: 2px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .nav-btn.active .nav-dot { opacity: 1; }
 
-    /* ─── RESPONSIVE ────────────────────────── */
-    @media (max-width: 480px) {
-      .goals-grid { grid-template-columns: 1fr; }
-      .hero { padding: 36px 16px 44px; }
-      main { padding: 28px 14px 90px; }
+    @media (max-width: 440px) {
+      .goal-desc { font-size: 12px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── HERO ── -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-date" id="hero-date"></div>
-    <h1>What are you building<br><span>today?</span></h1>
-    <p class="hero-sub">Connect what you do each day to what truly matters.</p>
+<!-- ════════════════════════════════
+     GOALS VIEW
+════════════════════════════════ -->
+<div class="view active" id="view-goals">
+  <div class="page-hero">
+    <div class="label">Your Goals</div>
+    <h1>What truly matters to you</h1>
   </div>
+
+  <section class="goals-section">
+    <div class="goals-list">
+
+      <div class="goal-card gc1">
+        <div class="goal-top">
+          <div class="goal-num">1</div>
+          <div class="goal-body">
+            <div class="goal-title">Strong and Powerful Me</div>
+            <div class="goal-desc">
+              85kg bodyweight · Lift 100kg · 108 Suryanamaskar · Handstand · Lift Guri.<br>
+              Mummy, Papa, Mattu and Guri inspired and proud. They feel safe with me. Aeknoor sees me as role model.
+            </div>
+            <div class="goal-focus">🥤 Protein shake first thing in morning</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-card gc2">
+        <div class="goal-top">
+          <div class="goal-num">2</div>
+          <div class="goal-body">
+            <div class="goal-title">I Am Role Model Performer</div>
+            <div class="goal-desc">
+              Operating as a role model at work and in life.<br>
+              Inspiring family, colleagues, and community. Babaji are proud. Hakk Halaal di kamai karda.
+            </div>
+            <div class="goal-focus">🧪 POC of Engage Replit</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-card gc3">
+        <div class="goal-top">
+          <div class="goal-num">3</div>
+          <div class="goal-body">
+            <div class="goal-title">Grow Income</div>
+            <div class="goal-desc">
+              2.2 Cr INR cash + 1 Cr INR stocks annual income.<br>
+              Save more than ₹2.5L monthly. Make all expenses feel smaller.
+            </div>
+            <div class="goal-focus">📋 90-day plan for this project</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-card gc4">
+        <div class="goal-top">
+          <div class="goal-num">4</div>
+          <div class="goal-body">
+            <div class="goal-title">Research Lab Setup</div>
+            <div class="goal-desc">
+              Setup a research lab for quantum computing and holographic communication.<br>
+              Get ₹15 Cr INR funding — while staying at my job.
+            </div>
+            <div class="goal-focus">🔬 Identify grant / funding path</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-card gc5">
+        <div class="goal-top">
+          <div class="goal-num">5</div>
+          <div class="goal-body">
+            <div class="goal-title">Lake of Wealth</div>
+            <div class="goal-desc">
+              New lake of wealth and happiness is built.<br>
+              AI agents consultancy — PromRagger. Old TCS/Infosys models won't survive. Build the new thing.
+            </div>
+            <div class="goal-focus">🚀 90-day plan and executing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-card gc6">
+        <div class="goal-top">
+          <div class="goal-num">6</div>
+          <div class="goal-body">
+            <div class="goal-title">Teesra Til</div>
+            <div class="goal-desc">
+              Reach the Teesra Til as per the guidance from Babaji.<br>
+              Daily Bhajan, Simran, and spiritual discipline.
+            </div>
+            <div class="goal-focus">🕯️ 3 hours daily</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </div>
 
-<main>
 
-  <!-- ── QUOTE ── -->
-  <div class="quote-box">
-    <p>"Naam japna, kirat karni, vand chhakna. The path is simple. Walk it fully."</p>
-    <span>— Sant Mat Wisdom</span>
+<!-- ════════════════════════════════
+     TODAY VIEW
+════════════════════════════════ -->
+<div class="view" id="view-today">
+  <div class="today-hero">
+    <div class="day-label" id="hero-date"></div>
+    <h1>What are you building today?</h1>
+    <p>Connect today's actions to what truly matters.</p>
   </div>
 
-  <!-- ── GOALS ── -->
-  <div class="section-header">
-    <h2>🎯 Goals</h2>
-    <div class="line"></div>
+  <section class="today-section">
+
+    <div class="quote-box">
+      <p>"Naam japna, kirat karni, vand chhakna.<br>The path is simple. Walk it fully."</p>
+      <cite>Sant Mat Wisdom</cite>
+    </div>
+
+    <div class="sec-title">Today's Intentions</div>
+
+    <div class="intentions-list" id="intentions-list"></div>
+
+    <div class="add-row">
+      <input type="text" id="new-int" placeholder="Add an intention…"
+        onkeydown="if(event.key==='Enter') addIntention()" autocomplete="off" />
+      <button onclick="addIntention()">+ Add</button>
+    </div>
+
+  </section>
+</div>
+
+
+<!-- ════════════════════════════════
+     REFLECT VIEW (placeholder)
+════════════════════════════════ -->
+<div class="view" id="view-reflect">
+  <div class="page-hero">
+    <div class="label">Reflect</div>
+    <h1>Weekly review coming soon</h1>
   </div>
+  <section style="max-width:600px;margin:40px auto;padding:0 20px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7;">
+    Track your wins, spot patterns, and celebrate progress. This section is being built. Talk to Hermes to log a reflection or review.
+  </section>
+</div>
 
-  <div class="goals-grid" id="goals-grid">
 
-    <!-- Card 1 -->
-    <div class="goal-card violet">
-      <span class="goal-emoji">💪</span>
-      <div class="goal-title">Strong & Powerful</div>
-      <div class="goal-desc">Build a body that reflects your inner strength. Discipline, consistency, vitality.</div>
-      <div class="progress-wrap">
-        <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
-        <div class="progress-pct">20%</div>
-      </div>
-      <div class="chip active">● Active</div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="goal-card gold">
-      <span class="goal-emoji">🔥</span>
-      <div class="goal-title">Teesra Til</div>
-      <div class="goal-desc">The third eye — clarity, intuition, spiritual elevation. Daily practice and alignment.</div>
-      <div class="progress-wrap">
-        <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
-        <div class="progress-pct">15%</div>
-      </div>
-      <div class="chip wealth">● Deepening</div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="goal-card green">
-      <span class="goal-emoji">💰</span>
-      <div class="goal-title">Lake of Wealth</div>
-      <div class="goal-desc">Build abundance — PromRagger revenue, investments, multiple income streams flowing.</div>
-      <div class="progress-wrap">
-        <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
-        <div class="progress-pct">10%</div>
-      </div>
-      <div class="chip body">● Growing</div>
-    </div>
-
-  </div>
-
-  <!-- ── TODAY'S INTENTIONS ── -->
-  <div class="section-header">
-    <h2>🌅 Today's Intentions</h2>
-    <div class="line"></div>
-  </div>
-
-  <div class="intentions-list" id="intentions-list">
-    <div class="intention-item" data-id="1">
-      <div class="checkbox" onclick="toggleCheck(this)"></div>
-      <div class="intention-content">
-        <div class="intention-text">Morning meditation — 20 min Simran</div>
-        <div class="intention-goal-tag">↳ Teesra Til</div>
-      </div>
-    </div>
-    <div class="intention-item" data-id="2">
-      <div class="checkbox" onclick="toggleCheck(this)"></div>
-      <div class="intention-content">
-        <div class="intention-text">Workout — push or pull</div>
-        <div class="intention-goal-tag">↳ Strong & Powerful</div>
-      </div>
-    </div>
-    <div class="intention-item" data-id="3">
-      <div class="checkbox" onclick="toggleCheck(this)"></div>
-      <div class="intention-content">
-        <div class="intention-text">Work on PromRagger — ship one thing</div>
-        <div class="intention-goal-tag">↳ Lake of Wealth</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="add-form">
-    <input type="text" id="new-intention" placeholder="Add an intention for today…" onkeydown="if(event.key==='Enter') addIntention()" />
-    <button onclick="addIntention()">Add</button>
-  </div>
-
-</main>
-
-<!-- ── BOTTOM NAV ── -->
+<!-- ════════════════════════════════
+     BOTTOM NAV
+════════════════════════════════ -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="setView('today')"><span class="icon">🌅</span>Today</button>
-  <button class="nav-btn" onclick="setView('goals')"><span class="icon">🎯</span>Goals</button>
-  <button class="nav-btn" onclick="setView('reflect')"><span class="icon">📊</span>Reflect</button>
+  <button class="nav-btn" id="nb-today" onclick="switchView('today')">
+    <span class="ico">🌅</span>Today<span class="nav-dot"></span>
+  </button>
+  <button class="nav-btn active" id="nb-goals" onclick="switchView('goals')">
+    <span class="ico">🎯</span>Goals<span class="nav-dot"></span>
+  </button>
+  <button class="nav-btn" id="nb-reflect" onclick="switchView('reflect')">
+    <span class="ico">📊</span>Reflect<span class="nav-dot"></span>
+  </button>
 </nav>
 
+
 <script>
-  // ── Date header ──
-  const d = new Date();
-  document.getElementById('hero-date').textContent =
-    d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+// ── Goal metadata ──────────────────────────────
+const GOALS = {
+  1: { name: 'Strong & Powerful', cls: 'tag-c1' },
+  2: { name: 'Role Model Performer', cls: 'tag-c2' },
+  3: { name: 'Grow Income', cls: 'tag-c3' },
+  4: { name: 'Research Lab', cls: 'tag-c4' },
+  5: { name: 'Lake of Wealth', cls: 'tag-c5' },
+  6: { name: 'Teesra Til', cls: 'tag-c6' },
+};
 
-  // ── Checkbox toggle ──
-  function toggleCheck(el) {
-    el.classList.toggle('checked');
-    el.closest('.intention-item').classList.toggle('done');
-    saveState();
-  }
+// ── Default intentions (reset each new day) ───
+const DEFAULT_INTENTIONS = [
+  { text: '90gm protein intake', goalNum: 1 },
+  { text: 'Suryanamaskaras', goalNum: 1 },
+  { text: 'Bhajan Simran', goalNum: 6 },
+  { text: 'Algomonster practice', goalNum: 2 },
+  { text: 'Gratitude journal', goalNum: null },
+  { text: 'Mission task', goalNum: 2 },
+  { text: 'One random act of kindness', goalNum: null },
+];
 
-  // ── Add intention ──
-  let idCounter = 100;
-  function addIntention() {
-    const inp = document.getElementById('new-intention');
-    const val = inp.value.trim();
-    if (!val) return;
-    idCounter++;
-    const li = document.createElement('div');
-    li.className = 'intention-item';
-    li.dataset.id = idCounter;
-    li.innerHTML = `
-      <div class="checkbox" onclick="toggleCheck(this)"></div>
-      <div class="intention-content">
-        <div class="intention-text">${escHtml(val)}</div>
-        <div class="intention-goal-tag">↳ General</div>
+// ── Date helpers ───────────────────────────────
+function todayKey() {
+  return 'int_' + new Date().toISOString().slice(0, 10);
+}
+function fmtDate() {
+  return new Date().toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+
+// ── Render ─────────────────────────────────────
+function renderIntentions() {
+  const list = document.getElementById('intentions-list');
+  const items = loadItems();
+  list.innerHTML = '';
+  items.forEach((item, idx) => {
+    const goal = item.goalNum ? GOALS[item.goalNum] : null;
+    const div = document.createElement('div');
+    div.className = 'int-item' + (item.done ? ' done' : '');
+    div.dataset.idx = idx;
+    div.onclick = () => toggleDone(idx);
+    div.innerHTML = `
+      <div class="cb">${item.done ? '✓' : ''}</div>
+      <div class="int-body">
+        <div class="int-text">${escHtml(item.text)}</div>
+        ${goal ? `<div class="int-tag ${goal.cls}">↳ ${goal.name}</div>` : ''}
       </div>`;
-    document.getElementById('intentions-list').appendChild(li);
-    inp.value = '';
-    saveState();
-  }
+    list.appendChild(div);
+  });
+}
 
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// ── State ──────────────────────────────────────
+function loadItems() {
+  const raw = localStorage.getItem(todayKey());
+  if (raw) {
+    try { return JSON.parse(raw); } catch(e) {}
   }
+  // fresh day — seed with defaults
+  const items = DEFAULT_INTENTIONS.map(d => ({ ...d, done: false }));
+  saveItems(items);
+  return items;
+}
+function saveItems(items) {
+  localStorage.setItem(todayKey(), JSON.stringify(items));
+}
 
-  // ── Persist state in localStorage ──
-  function saveState() {
-    const items = [];
-    document.querySelectorAll('.intention-item').forEach(el => {
-      items.push({
-        id: el.dataset.id,
-        text: el.querySelector('.intention-text').textContent,
-        tag: el.querySelector('.intention-goal-tag').textContent,
-        done: el.classList.contains('done')
-      });
-    });
-    const key = 'intentions_' + new Date().toISOString().slice(0,10);
-    localStorage.setItem(key, JSON.stringify(items));
-  }
+function toggleDone(idx) {
+  const items = loadItems();
+  items[idx].done = !items[idx].done;
+  saveItems(items);
+  renderIntentions();
+}
 
-  function loadState() {
-    const key = 'intentions_' + new Date().toISOString().slice(0,10);
-    const raw = localStorage.getItem(key);
-    if (!raw) return;
-    try {
-      const items = JSON.parse(raw);
-      const list = document.getElementById('intentions-list');
-      list.innerHTML = '';
-      items.forEach(item => {
-        const li = document.createElement('div');
-        li.className = 'intention-item' + (item.done ? ' done' : '');
-        li.dataset.id = item.id;
-        li.innerHTML = `
-          <div class="checkbox${item.done ? ' checked' : ''}" onclick="toggleCheck(this)">${item.done ? '✓' : ''}</div>
-          <div class="intention-content">
-            <div class="intention-text">${escHtml(item.text)}</div>
-            <div class="intention-goal-tag">${escHtml(item.tag)}</div>
-          </div>`;
-        list.appendChild(li);
-      });
-    } catch(e) {}
-  }
+let uid = 1000;
+function addIntention() {
+  const inp = document.getElementById('new-int');
+  const val = inp.value.trim();
+  if (!val) return;
+  const items = loadItems();
+  items.push({ text: val, goalNum: null, done: false, id: ++uid });
+  saveItems(items);
+  inp.value = '';
+  renderIntentions();
+}
 
-  // ── Simple nav (scroll sections) ──
-  function setView(v) {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    if (v === 'goals') {
-      document.getElementById('goals-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
-  loadState();
+// ── Nav ────────────────────────────────────────
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('nb-' + name).classList.add('active');
+}
+
+// ── Boot ───────────────────────────────────────
+document.getElementById('hero-date').textContent = fmtDate();
+renderIntentions();
 </script>
 </body>
 </html>
