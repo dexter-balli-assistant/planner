@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baljeet's Goals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-deep:    #1E1535;
+      --bg-card:    #2A1F4A;
+      --bg-light:   #F2EEF9;
+      --accent:     #7C3AED;
+      --accent-glow:#A855F7;
+      --green:      #22C55E;
+      --green-dim:  #166534;
+      --text:       #F8F4FF;
+      --text-muted: #C4B5D4;
+      --border:     rgba(168, 85, 247, 0.18);
+      --gold:       #FBBF24;
+      --gold-dim:   #92400E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── HERO ─────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #1E1535 0%, #2D1B69 50%, #1E1535 100%);
+      padding: 48px 24px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,58,237,0.25) 0%, transparent 70%);
+    }
+    .hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
+    .hero-date {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-glow);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .hero h1 span { color: var(--accent-glow); }
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* ─── LAYOUT ────────────────────────────── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ─── SECTION HEADER ────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .section-header h2 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .section-header .line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── GOAL CARDS ────────────────────────── */
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .goal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: default;
+    }
+    .goal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(124,58,237,0.2);
+    }
+
+    /* accent top strip */
+    .goal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 2px;
+      border-radius: 0 0 4px 4px;
+    }
+    .goal-card.violet::before  { background: linear-gradient(90deg, #7C3AED, #A855F7); }
+    .goal-card.gold::before    { background: linear-gradient(90deg, #D97706, #FBBF24); }
+    .goal-card.green::before   { background: linear-gradient(90deg, #059669, #34D399); }
+
+    .goal-emoji {
+      font-size: 32px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .goal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .goal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    /* progress bar */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+    .goal-card.violet .progress-fill { background: linear-gradient(90deg, #7C3AED, #A855F7); }
+    .goal-card.gold   .progress-fill { background: linear-gradient(90deg, #D97706, #FBBF24); }
+    .goal-card.green  .progress-fill { background: linear-gradient(90deg, #059669, #34D399); }
+    .progress-pct {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 30px;
+      text-align: right;
+    }
+
+    /* status chip */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 99px;
+      margin-top: 12px;
+    }
+    .chip.active  { background: rgba(124,58,237,0.18); color: var(--accent-glow); }
+    .chip.wealth  { background: rgba(251,191,36,0.15); color: var(--gold); }
+    .chip.body    { background: rgba(34,197,94,0.15); color: #4ADE80; }
+
+    /* ─── INTENTIONS (Daily) ────────────────── */
+    .intentions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .intention-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: background 0.15s;
+    }
+    .intention-item.done {
+      opacity: 0.5;
+    }
+    .intention-item.done .intention-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid rgba(168,85,247,0.4);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .checkbox.checked::after {
+      content: '✓';
+      font-size: 11px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .intention-content { flex: 1; }
+    .intention-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .intention-goal-tag {
+      font-size: 11px;
+      color: var(--accent-glow);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* ─── ADD INTENTION form ──────────────── */
+    .add-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .add-form input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .add-form input::placeholder { color: rgba(196,181,212,0.45); }
+    .add-form input:focus { border-color: var(--accent-glow); }
+    .add-form button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .add-form button:hover { background: var(--accent-glow); }
+
+    /* ─── QUOTE BOX ─────────────────────────── */
+    .quote-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(168,85,247,0.06));
+      border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 16px;
+      padding: 24px 28px;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .quote-box p {
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .quote-box span {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-glow);
+      margin-top: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── BOTTOM NAV ────────────────────────── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(30,21,53,0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 4px 16px;
+      border-radius: 8px;
+      transition: color 0.15s;
+    }
+    .nav-btn.active { color: var(--accent-glow); }
+    .nav-btn .icon { font-size: 20px; line-height: 1; }
+
+    /* ─── RESPONSIVE ────────────────────────── */
+    @media (max-width: 480px) {
+      .goals-grid { grid-template-columns: 1fr; }
+      .hero { padding: 36px 16px 44px; }
+      main { padding: 28px 14px 90px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-date" id="hero-date"></div>
+    <h1>What are you building<br><span>today?</span></h1>
+    <p class="hero-sub">Connect what you do each day to what truly matters.</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- ── QUOTE ── -->
+  <div class="quote-box">
+    <p>"Naam japna, kirat karni, vand chhakna. The path is simple. Walk it fully."</p>
+    <span>— Sant Mat Wisdom</span>
+  </div>
+
+  <!-- ── GOALS ── -->
+  <div class="section-header">
+    <h2>🎯 Goals</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="goals-grid" id="goals-grid">
+
+    <!-- Card 1 -->
+    <div class="goal-card violet">
+      <span class="goal-emoji">💪</span>
+      <div class="goal-title">Strong & Powerful</div>
+      <div class="goal-desc">Build a body that reflects your inner strength. Discipline, consistency, vitality.</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+        <div class="progress-pct">20%</div>
+      </div>
+      <div class="chip active">● Active</div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="goal-card gold">
+      <span class="goal-emoji">🔥</span>
+      <div class="goal-title">Teesra Til</div>
+      <div class="goal-desc">The third eye — clarity, intuition, spiritual elevation. Daily practice and alignment.</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
+        <div class="progress-pct">15%</div>
+      </div>
+      <div class="chip wealth">● Deepening</div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="goal-card green">
+      <span class="goal-emoji">💰</span>
+      <div class="goal-title">Lake of Wealth</div>
+      <div class="goal-desc">Build abundance — PromRagger revenue, investments, multiple income streams flowing.</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+        <div class="progress-pct">10%</div>
+      </div>
+      <div class="chip body">● Growing</div>
+    </div>
+
+  </div>
+
+  <!-- ── TODAY'S INTENTIONS ── -->
+  <div class="section-header">
+    <h2>🌅 Today's Intentions</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="intentions-list" id="intentions-list">
+    <div class="intention-item" data-id="1">
+      <div class="checkbox" onclick="toggleCheck(this)"></div>
+      <div class="intention-content">
+        <div class="intention-text">Morning meditation — 20 min Simran</div>
+        <div class="intention-goal-tag">↳ Teesra Til</div>
+      </div>
+    </div>
+    <div class="intention-item" data-id="2">
+      <div class="checkbox" onclick="toggleCheck(this)"></div>
+      <div class="intention-content">
+        <div class="intention-text">Workout — push or pull</div>
+        <div class="intention-goal-tag">↳ Strong & Powerful</div>
+      </div>
+    </div>
+    <div class="intention-item" data-id="3">
+      <div class="checkbox" onclick="toggleCheck(this)"></div>
+      <div class="intention-content">
+        <div class="intention-text">Work on PromRagger — ship one thing</div>
+        <div class="intention-goal-tag">↳ Lake of Wealth</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="add-form">
+    <input type="text" id="new-intention" placeholder="Add an intention for today…" onkeydown="if(event.key==='Enter') addIntention()" />
+    <button onclick="addIntention()">Add</button>
+  </div>
+
+</main>
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="setView('today')"><span class="icon">🌅</span>Today</button>
+  <button class="nav-btn" onclick="setView('goals')"><span class="icon">🎯</span>Goals</button>
+  <button class="nav-btn" onclick="setView('reflect')"><span class="icon">📊</span>Reflect</button>
+</nav>
+
+<script>
+  // ── Date header ──
+  const d = new Date();
+  document.getElementById('hero-date').textContent =
+    d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  // ── Checkbox toggle ──
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.closest('.intention-item').classList.toggle('done');
+    saveState();
+  }
+
+  // ── Add intention ──
+  let idCounter = 100;
+  function addIntention() {
+    const inp = document.getElementById('new-intention');
+    const val = inp.value.trim();
+    if (!val) return;
+    idCounter++;
+    const li = document.createElement('div');
+    li.className = 'intention-item';
+    li.dataset.id = idCounter;
+    li.innerHTML = `
+      <div class="checkbox" onclick="toggleCheck(this)"></div>
+      <div class="intention-content">
+        <div class="intention-text">${escHtml(val)}</div>
+        <div class="intention-goal-tag">↳ General</div>
+      </div>`;
+    document.getElementById('intentions-list').appendChild(li);
+    inp.value = '';
+    saveState();
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Persist state in localStorage ──
+  function saveState() {
+    const items = [];
+    document.querySelectorAll('.intention-item').forEach(el => {
+      items.push({
+        id: el.dataset.id,
+        text: el.querySelector('.intention-text').textContent,
+        tag: el.querySelector('.intention-goal-tag').textContent,
+        done: el.classList.contains('done')
+      });
+    });
+    const key = 'intentions_' + new Date().toISOString().slice(0,10);
+    localStorage.setItem(key, JSON.stringify(items));
+  }
+
+  function loadState() {
+    const key = 'intentions_' + new Date().toISOString().slice(0,10);
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+    try {
+      const items = JSON.parse(raw);
+      const list = document.getElementById('intentions-list');
+      list.innerHTML = '';
+      items.forEach(item => {
+        const li = document.createElement('div');
+        li.className = 'intention-item' + (item.done ? ' done' : '');
+        li.dataset.id = item.id;
+        li.innerHTML = `
+          <div class="checkbox${item.done ? ' checked' : ''}" onclick="toggleCheck(this)">${item.done ? '✓' : ''}</div>
+          <div class="intention-content">
+            <div class="intention-text">${escHtml(item.text)}</div>
+            <div class="intention-goal-tag">${escHtml(item.tag)}</div>
+          </div>`;
+        list.appendChild(li);
+      });
+    } catch(e) {}
+  }
+
+  // ── Simple nav (scroll sections) ──
+  function setView(v) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if (v === 'goals') {
+      document.getElementById('goals-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  loadState();
+</script>
+</body>
+</html>
