@@ -508,13 +508,44 @@
 <div class="view" id="view-reflect">
   <div class="page-hero">
     <div class="label">Reflect</div>
-    <h1>Weekly review coming soon</h1>
+    <h1>How did this week go?</h1>
   </div>
-  <section style="max-width:600px;margin:40px auto;padding:0 20px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7;">
-    Track your wins, spot patterns, and celebrate progress. This section is being built. Talk to Hermes to log a reflection or review.
+  <section style="max-width:680px;margin:0 auto;padding:28px 16px 100px;">
+    <div id="reflect-content"></div>
   </section>
 </div>
 
+
+<!-- ════════════════════════════════
+     CARRY-OVER SHEET
+════════════════════════════════ -->
+<div id="carryover-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" onclick="dismissCarryover(event)">
+  <div id="carryover-sheet" style="
+    position:absolute;bottom:0;left:0;right:0;
+    background:#18181F;
+    border-top:1px solid rgba(255,255,255,0.08);
+    border-radius:20px 20px 0 0;
+    padding:24px 20px max(24px,env(safe-area-inset-bottom));
+    max-height:80vh;overflow-y:auto;
+  ">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:99px;margin:0 auto 20px;"></div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8E879E;margin-bottom:6px;">From yesterday</div>
+    <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;">Bring anything forward?</div>
+    <div style="font-size:13px;color:#8E879E;margin-bottom:20px;">These weren't done. Tap to add to today.</div>
+    <div id="carryover-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="addSelected()" style="
+        flex:1;background:#22C55E;color:#000;border:none;border-radius:11px;
+        padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+      ">Add selected</button>
+      <button onclick="closeCarryover()" style="
+        background:#1E1E28;color:#8E879E;border:1px solid rgba(255,255,255,0.08);
+        border-radius:11px;padding:13px 18px;font-size:14px;font-weight:600;
+        cursor:pointer;font-family:inherit;
+      ">Skip</button>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════════════════════
      BOTTOM NAV
@@ -623,17 +654,214 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// ── Carry-over picker ──────────────────────────
+function yesterdayKey() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return 'int_' + d.toISOString().slice(0, 10);
+}
+
+let _carryoverCandidates = [];
+
+function checkCarryover() {
+  // Only show once per day
+  const shownKey = 'carryover_shown_' + new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem(shownKey)) return;
+
+  const raw = localStorage.getItem(yesterdayKey());
+  if (!raw) return;
+  let yesterday;
+  try { yesterday = JSON.parse(raw); } catch(e) { return; }
+
+  // Only non-default undone items carry over (don't re-offer the dailies)
+  const defaultTexts = new Set(DEFAULT_INTENTIONS.map(d => d.text.toLowerCase()));
+  const undone = yesterday.filter(i => !i.done && !defaultTexts.has(i.text.toLowerCase()));
+  if (!undone.length) return;
+
+  _carryoverCandidates = undone.map(i => ({ ...i, selected: true }));
+  renderCarryoverList();
+  document.getElementById('carryover-overlay').style.display = 'block';
+  localStorage.setItem(shownKey, '1');
+}
+
+function renderCarryoverList() {
+  const el = document.getElementById('carryover-list');
+  el.innerHTML = '';
+  _carryoverCandidates.forEach((item, idx) => {
+    const goal = item.goalNum ? GOALS[item.goalNum] : null;
+    const div = document.createElement('div');
+    div.style.cssText = `
+      display:flex;align-items:flex-start;gap:12px;
+      background:${item.selected ? 'rgba(34,197,94,0.08)' : '#111118'};
+      border:1px solid ${item.selected ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.07)'};
+      border-radius:11px;padding:12px 14px;cursor:pointer;transition:all 0.12s;
+    `;
+    div.onclick = () => {
+      _carryoverCandidates[idx].selected = !_carryoverCandidates[idx].selected;
+      renderCarryoverList();
+    };
+    div.innerHTML = `
+      <div style="
+        width:22px;height:22px;border-radius:7px;flex-shrink:0;margin-top:1px;
+        display:flex;align-items:center;justify-content:center;font-size:12px;
+        background:${item.selected ? '#22C55E' : 'transparent'};
+        border:2px solid ${item.selected ? '#22C55E' : 'rgba(255,255,255,0.15)'};
+        color:#000;font-weight:700;
+      ">${item.selected ? '✓' : ''}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:500;color:#F0EEFF;">${escHtml(item.text)}</div>
+        ${goal ? `<div style="font-size:11px;margin-top:3px;" class="${goal.cls}">↳ ${goal.name}</div>` : ''}
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+function addSelected() {
+  const toAdd = _carryoverCandidates.filter(i => i.selected);
+  if (!toAdd.length) { closeCarryover(); return; }
+  const items = loadItems();
+  toAdd.forEach(i => items.push({ text: i.text, goalNum: i.goalNum || null, done: false }));
+  saveItems(items);
+  renderIntentions();
+  closeCarryover();
+}
+
+function closeCarryover() {
+  document.getElementById('carryover-overlay').style.display = 'none';
+}
+
+function dismissCarryover(e) {
+  if (e.target === document.getElementById('carryover-overlay')) closeCarryover();
+}
+
 // ── Nav ────────────────────────────────────────
 function switchView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   document.getElementById('nb-' + name).classList.add('active');
+  if (name === 'reflect') renderReflect();
+}
+
+// ── Reflect ────────────────────────────────────
+function renderReflect() {
+  const el = document.getElementById('reflect-content');
+  el.innerHTML = '';
+
+  // Build last 7 days
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+
+  // Summary bar
+  let totalDone = 0, totalAll = 0;
+  const dayBlocks = days.map(d => {
+    const key = 'int_' + d.toISOString().slice(0, 10);
+    const raw = localStorage.getItem(key);
+    let items = [];
+    try { if (raw) items = JSON.parse(raw); } catch(e) {}
+    const done = items.filter(i => i.done).length;
+    const total = items.length;
+    totalDone += done;
+    totalAll += total;
+    return { d, items, done, total };
+  });
+
+  // Week score
+  const pct = totalAll ? Math.round(totalDone / totalAll * 100) : 0;
+  const scoreColor = pct >= 70 ? '#22C55E' : pct >= 40 ? '#EAB308' : '#F97316';
+  el.innerHTML = `
+    <div style="
+      background:#18181F;border:1px solid rgba(255,255,255,0.07);
+      border-radius:14px;padding:20px;margin-bottom:24px;
+      display:flex;align-items:center;gap:20px;
+    ">
+      <div style="text-align:center;min-width:64px;">
+        <div style="font-size:32px;font-weight:800;color:${scoreColor};">${pct}%</div>
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#8E879E;margin-top:2px;">This week</div>
+      </div>
+      <div style="flex:1;">
+        <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin-bottom:8px;">
+          <div style="height:100%;width:${pct}%;background:${scoreColor};border-radius:99px;transition:width 0.4s;"></div>
+        </div>
+        <div style="font-size:13px;color:#8E879E;">${totalDone} of ${totalAll} intentions completed</div>
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8E879E;margin-bottom:12px;">Daily breakdown</div>
+  `;
+
+  // Day rows
+  dayBlocks.forEach(({ d, items, done, total }) => {
+    const isToday = d.toISOString().slice(0,10) === new Date().toISOString().slice(0,10);
+    const dayLabel = isToday ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    const dayPct = total ? Math.round(done / total * 100) : null;
+    const barColor = dayPct === null ? '#2A2A35' : dayPct >= 70 ? '#22C55E' : dayPct >= 40 ? '#EAB308' : '#F97316';
+
+    const block = document.createElement('div');
+    block.style.cssText = `
+      background:#18181F;border:1px solid rgba(255,255,255,0.07);
+      border-radius:12px;margin-bottom:8px;overflow:hidden;
+    `;
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;';
+    header.innerHTML = `
+      <div style="min-width:72px;font-size:13px;font-weight:${isToday?700:500};color:${isToday?'#fff':'#8E879E'};">${dayLabel}</div>
+      <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${dayPct ?? 0}%;background:${barColor};border-radius:99px;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:${barColor};min-width:36px;text-align:right;">
+        ${dayPct !== null ? done+'/'+total : '—'}
+      </div>
+      <div style="font-size:10px;color:#8E879E;">›</div>
+    `;
+
+    // Expandable items
+    const detail = document.createElement('div');
+    detail.style.cssText = 'display:none;padding:0 16px 14px;';
+    if (items.length) {
+      items.forEach(item => {
+        const row = document.createElement('div');
+        row.style.cssText = `
+          display:flex;align-items:center;gap:10px;padding:6px 0;
+          border-top:1px solid rgba(255,255,255,0.04);
+          opacity:${item.done ? 0.5 : 1};
+        `;
+        const goal = item.goalNum ? GOALS[item.goalNum] : null;
+        row.innerHTML = `
+          <span style="font-size:13px;">${item.done ? '✅' : '⬜'}</span>
+          <span style="font-size:13px;color:${item.done ? '#8E879E' : '#F0EEFF'};
+            text-decoration:${item.done ? 'line-through' : 'none'};flex:1;">
+            ${escHtml(item.text)}
+          </span>
+          ${goal ? `<span style="font-size:10px;font-weight:600;" class="${goal.cls}">${goal.name}</span>` : ''}
+        `;
+        detail.appendChild(row);
+      });
+    } else {
+      detail.innerHTML = '<div style="font-size:13px;color:#8E879E;padding:6px 0;">No intentions recorded</div>';
+    }
+
+    let open = false;
+    header.onclick = () => {
+      open = !open;
+      detail.style.display = open ? 'block' : 'none';
+      header.querySelector('div:last-child').textContent = open ? '↓' : '›';
+    };
+
+    block.appendChild(header);
+    block.appendChild(detail);
+    el.appendChild(block);
+  });
 }
 
 // ── Boot ───────────────────────────────────────
 document.getElementById('hero-date').textContent = fmtDate();
 renderIntentions();
+checkCarryover();
 </script>
 </body>
 </html>
